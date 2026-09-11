@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector QR Básico</title>
+    <!-- Importamos la librería Html5-QRCode desde CDN -->
+    <script src="https://unpkg.com" type="text/javascript"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        #reader {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .result-container {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #eef2f3;
+            border-left: 5px solid #2ecc71;
+            word-wrap: break-word;
+            text-align: left;
+            display: none;
+        }
+
+        .result-container h3 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        #result-text {
+            color: #555;
+            font-size: 15px;
+        }
+
+        #result-text a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        #result-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Lector de Códigos QR</h1>
+        
+        <!-- Contenedor donde se mostrará la cámara -->
+        <div id="reader"></div>
+
+        <!-- Contenedor donde se mostrará el resultado del escaneo -->
+        <div class="result-container" id="result-box">
+            <h3>Texto detectado:</h3>
+            <div id="result-text"></div>
+        </div>
+    </div>
+
+    <script>
+        // Callback cuando el escaneo es exitoso
+        function onScanSuccess(decodedText, decodedResult) {
+            const resultBox = document.getElementById('result-box');
+            const resultText = document.getElementById('result-text');
+            
+            // Hacer visible la caja de resultados
+            resultBox.style.display = 'block';
+            
+            // Si el texto es un enlace web, lo hacemos clickeable
+            if (decodedText.startsWith('http://') || decodedText.startsWith('https://')) {
+                resultText.innerHTML = `<a href="${decodedText}" target="_blank">${decodedText} ↗</a>`;
+            } else {
+                resultText.textContent = decodedText;
+            }
+        }
+
+        // Callback opcional cuando falla el escaneo (busca continuamente, por lo que suele ignorarse)
+        function onScanFailure(error) {
+            // Se puede dejar vacío para evitar saturar la consola
+        }
+
+        // Configuración y renderizado del lector QR
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", 
+            { 
+                fps: 10,       // Cuadros por segundo a los que escanea
+                qrbox: { width: 250, height: 250 }  // Tamaño del cuadro guía de escaneo
+            },
+            /* verbose= */ false
+        );
+        
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    </script>
+
+</body>
+</html>
